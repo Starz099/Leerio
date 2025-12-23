@@ -4,8 +4,8 @@ export const Container = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="flex w-screen justify-center">
-      <div className="container mx-auto max-w-5xl">{children}</div>
+    <div className="flex w-full justify-center">
+      <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8">{children}</div>
     </div>
   );
 };
