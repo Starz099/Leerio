@@ -87,3 +87,74 @@ Now answer the following question using the above context:`;
   const result = aiMsg.content;
   return result;
 }
+
+export async function summariseChunks(chunks: string[]) {
+  const rephraseModel = new ChatGroq({
+    model: "llama-3.3-70b-versatile",
+    temperature: 0,
+    maxRetries: 2,
+  });
+
+  const systemPrompt = `You are a helpful assistant that summarizes text chunks into concise summaries.
+Your task is to read the provided text chunks and generate a brief summary that captures the main points.
+give back only 2 bullet points.
+
+Guidelines:
+1. Provide a concise summary of the key information from the chunks
+2. Do not hallucinate or add information not present in the chunks
+3. Keep the summary clear and to the point
+
+Format: - Bullet Point 1
+- Bullet Point 2
+- Bullet Point 3
+`;
+
+  const aiMsg = await rephraseModel.invoke([
+    {
+      role: "system",
+      content: systemPrompt,
+    },
+    {
+      role: "user",
+      content: `Here are the text chunks to summarize:\n\n${chunks
+        .map((chunk, index) => `Chunk ${index + 1}:\n${chunk}`)
+        .join("\n\n")}`,
+    },
+  ]);
+
+  const result = aiMsg.content;
+  return result;
+}
+
+export async function summariseFile(summaries: string[]) {
+  const rephraseModel = new ChatGroq({
+    model: "llama-3.3-70b-versatile",
+    temperature: 0,
+    maxRetries: 2,
+  });
+
+  const systemPrompt = `You are a helpful assistant that summarizes multiple summaries into a concise overall summary.
+Your task is to read the provided summaries and generate a brief overall summary that captures the main points.
+
+Guidelines:
+1. Provide a concise overall summary of the key information from the summaries
+2. Do not hallucinate or add information not present in the summaries
+3. Keep the summary clear and to the point
+`;
+
+  const aiMsg = await rephraseModel.invoke([
+    {
+      role: "system",
+      content: systemPrompt,
+    },
+    {
+      role: "user",
+      content: `Here are the summaries to summarize:\n\n${summaries
+        .map((summary, index) => `Summary ${index + 1}:\n${summary}`)
+        .join("\n\n")}`,
+    },
+  ]);
+
+  const result = aiMsg.content;
+  return result;
+}

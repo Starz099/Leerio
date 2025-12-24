@@ -8,6 +8,7 @@ import { PineconeStore } from "@langchain/pinecone";
 import { getGoogleEmbeddings } from "../utils/embedding.js";
 import { getPineconeIndex } from "../utils/pinecone.js";
 import mongoose from "mongoose";
+import { Chunks } from "../schema/chunks.js";
 
 export const handleFileUpload = async (req: Request, res: Response) => {
   const file = req.file;
@@ -64,6 +65,12 @@ export const handleFileUpload = async (req: Request, res: Response) => {
         //   console.log("Chunk: ", chunk);
         //   console.log(" ");
         // }
+
+        await Chunks.create({
+          chunks,
+          projectId,
+          owner: username,
+        });
 
         console.log("Storing chunks in Pinecone vector DB...");
         const chunkMetadata = chunks.map(() => ({ projectId }));

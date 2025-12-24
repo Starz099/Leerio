@@ -1,7 +1,8 @@
 "use client";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import ChatSection from "./ChatSection";
+import ChatSection from "./chat-section";
+import SummarySection from "./summary-section";
 const Workbench = () => {
   const [selectedMode, setSelectedMode] = useState<
     "chat" | "read-aloud" | "summarise"
@@ -47,7 +48,7 @@ const Workbench = () => {
         )}
         {selectedMode === "summarise" && (
           <div className="h-full w-full border">
-            Summarise Component Placeholder
+            <SummarySection />
           </div>
         )}
       </div>
