@@ -40,7 +40,7 @@ export const handleFileUpload = async (req: Request, res: Response) => {
         const createdProject = await Project.create({
           projectId,
           fileUrl: result?.secure_url as string,
-          publicId: `${Date.now()}_${username}_${file.originalname}`,
+          publicId: `${file.originalname}`,
           owner: username,
         });
 

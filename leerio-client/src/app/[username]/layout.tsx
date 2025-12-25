@@ -35,9 +35,13 @@ const Layout = async ({ children, params }: UsernameLayoutProps) => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
+      <main className="flex-1 overflow-auto">
+        <div className="border-border/50 bg-background/95 sticky top-0 flex items-center gap-2 border-b px-6 py-3 backdrop-blur-sm md:px-8">
+          <SidebarTrigger />
+        </div>
+        <div className="flex justify-center">
+          <div className="w-full max-w-6xl p-6 md:p-8">{children}</div>
+        </div>
       </main>
     </SidebarProvider>
   );
