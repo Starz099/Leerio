@@ -88,17 +88,6 @@ const ReadAloudSection = () => {
     console.log("Speech cancelled");
   };
 
-  const testVoice = () => {
-    stop();
-    const utterance = new SpeechSynthesisUtterance("hello mayank");
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) utterance.voice = voices[0];
-    utterance.onstart = () => console.log("Test speech started");
-    utterance.onend = () => console.log("Test speech ended");
-    window.speechSynthesis.resume();
-    window.speechSynthesis.speak(utterance);
-  };
-
   const speak = async () => {
     try {
       console.log("Speak function called");
@@ -176,13 +165,6 @@ const ReadAloudSection = () => {
         style={{ marginLeft: 8 }}
       >
         Stop
-      </Button>
-      <Button
-        variant="outline"
-        onClick={() => testVoice()}
-        style={{ marginLeft: 8 }}
-      >
-        Test Voice
       </Button>
     </div>
   );
