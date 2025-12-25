@@ -1,13 +1,5 @@
 import { type Request, type Response } from "express";
-import { Project } from "../schema/projects.js";
-import {
-  chatWithLLMwithContext,
-  rephraseQuery,
-  summariseChunks,
-  summariseFile,
-} from "../utils/ai.js";
-import { getGoogleEmbeddings } from "../utils/embedding.js";
-import { getPineconeIndex } from "../utils/pinecone.js";
+import { summariseChunks, summariseFile } from "../utils/ai.js";
 import { Chunks } from "../schema/chunks.js";
 
 export const summary = async (req: Request, res: Response) => {

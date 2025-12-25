@@ -22,7 +22,7 @@ const SummarySection = () => {
     setSummary(response.response);
   };
 
-  if(summary !== "") {
+  if (summary !== "") {
     return (
       <div className="p-4">
         <h2 className="mb-4 text-2xl font-bold">Project Summary</h2>

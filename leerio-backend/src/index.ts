@@ -11,6 +11,7 @@ import { initializeCloudinary } from "./utils/cloudinary.js";
 import { getProjects } from "./helpers/getProjects.js";
 import { chat } from "./helpers/chat.js";
 import { summary } from "./helpers/summary.js";
+import { getTextOfPdf } from "./helpers/read_aloud.js";
 
 // Initialize Cloudinary with environment variables
 initializeCloudinary();
@@ -27,6 +28,7 @@ app.post("/upload", upload.single("pdf"), handleFileUpload);
 
 app.get("/projects", getProjects);
 app.post("/chat", chat);
+app.post("/read-aloud", getTextOfPdf);
 app.post("/summary", summary);
 
 if (await connectDB()) {
