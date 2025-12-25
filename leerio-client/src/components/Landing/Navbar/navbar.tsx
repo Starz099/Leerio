@@ -12,6 +12,7 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
+import Image from "next/image";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,15 +28,14 @@ const Navbar = () => {
     <nav className="border-border/40 bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center gap-2 text-lg font-semibold"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-pink-500 to-purple-600 font-bold text-white">
-              L
-            </div>
-            <span className="text-foreground hidden sm:inline">Leerio</span>
+          <Link href="/" className="flex items-end gap-2 text-3xl font-bold">
+            <Image
+              src="/logo.png"
+              alt="Leerio Logo"
+              width={36}
+              height={36}
+              className="size-14"
+            />
           </Link>
 
           {/* Desktop Navigation */}

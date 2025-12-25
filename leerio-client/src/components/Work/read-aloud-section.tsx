@@ -3,9 +3,22 @@
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { useState, useRef } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  Volume2,
+  Play,
+  Pause,
+  Square,
+  Loader2,
+  CheckCircle,
+  Music,
+} from "lucide-react";
+import { Progress } from "../ui/progress";
 
 const ReadAloudSection = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const queueRef = useRef<string[]>([]);
   const indexRef = useRef<number>(0);
   const pathname = usePathname();
@@ -50,11 +63,16 @@ const ReadAloudSection = () => {
   const speakChunk = (voice?: SpeechSynthesisVoice) => {
     const q = queueRef.current;
     const i = indexRef.current;
+
     if (i >= q.length) {
       setIsSpeaking(false);
+      setProgress(100);
       console.log("All chunks spoken");
       return;
     }
+
+    // Update progress
+    setProgress(Math.round((i / q.length) * 100));
 
     const utterance = new SpeechSynthesisUtterance(q[i]);
     if (voice) utterance.voice = voice;
@@ -85,6 +103,7 @@ const ReadAloudSection = () => {
     queueRef.current = [];
     indexRef.current = 0;
     setIsSpeaking(false);
+    setProgress(0);
     console.log("Speech cancelled");
   };
 
@@ -105,7 +124,8 @@ const ReadAloudSection = () => {
         return;
       }
 
-      setIsSpeaking(true);
+      setIsLoading(true);
+      setProgress(0);
       console.log(
         "Fetching from:",
         `http://localhost:8000/read-aloud?username=${username}&projectId=${projectId}`,
@@ -122,7 +142,7 @@ const ReadAloudSection = () => {
 
       if (!response.response) {
         console.error("No response text received");
-        setIsSpeaking(false);
+        setIsLoading(false);
         return;
       }
 
@@ -135,6 +155,9 @@ const ReadAloudSection = () => {
       queueRef.current = chunks;
       indexRef.current = 0;
       console.log("Chunks prepared:", chunks.length);
+
+      setIsLoading(false);
+      setIsSpeaking(true);
 
       // Load voices reliably
       const selectVoice = () => {
@@ -153,19 +176,98 @@ const ReadAloudSection = () => {
     } catch (error) {
       console.error("Error in speak function:", error);
       setIsSpeaking(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div>
-      <Button onClick={() => speak()}>Play</Button>
-      <Button
-        variant="secondary"
-        onClick={() => stop()}
-        style={{ marginLeft: 8 }}
-      >
-        Stop
-      </Button>
+    <div className="flex h-full w-full items-center justify-center p-8">
+      <Card className="w-full max-w-lg">
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <div className="p-3">
+              <Volume2 className="text-primary h-6 w-6" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl">Read Aloud</CardTitle>
+              <p className="text-muted-foreground text-sm">
+                Listen to your document with natural voice
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* Features List */}
+          {!isSpeaking && !isLoading && (
+            <ul className="text-muted-foreground space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                <span>Natural text-to-speech synthesis</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                <span>Adjustable playback controls</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                <span>High-quality voice output</span>
+              </li>
+            </ul>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center space-y-4 py-8">
+              <div className="relative">
+                <Music className="text-primary h-12 w-12 animate-pulse" />
+              </div>
+              <div className="space-y-1 text-center">
+                <p className="font-medium">Preparing Audio</p>
+                <p className="text-muted-foreground text-sm">
+                  Loading your document...
+                </p>
+              </div>
+              <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
+            </div>
+          )}
+
+          {/* Controls */}
+          <div className="flex gap-2">
+            {!isSpeaking ? (
+              <Button
+                className="flex-1 gap-2"
+                size="lg"
+                onClick={speak}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Play className="h-5 w-5" />
+                )}
+                {isLoading ? "Loading..." : "Start Reading"}
+              </Button>
+            ) : (
+              <>
+                <Button
+                  className="flex-1 gap-2"
+                  size="lg"
+                  variant="secondary"
+                  onClick={stop}
+                >
+                  <Square className="h-5 w-5" />
+                  Stop
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Info */}
+          <p className="text-muted-foreground text-center text-xs">
+            Use natural voice synthesis to listen to your document hands-free
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };

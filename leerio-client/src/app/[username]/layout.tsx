@@ -40,7 +40,9 @@ const Layout = async ({ children, params }: UsernameLayoutProps) => {
           <SidebarTrigger />
         </div>
         <div className="flex justify-center">
-          <div className="w-full max-w-6xl p-6 md:p-8">{children}</div>
+          <div className="min-h-175 w-full max-w-6xl p-6 md:p-8">
+            {children}
+          </div>
         </div>
       </main>
     </SidebarProvider>
