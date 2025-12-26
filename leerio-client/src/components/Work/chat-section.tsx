@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { Send, Bot, User, Sparkles, Loader2 } from "lucide-react";
 import { Card } from "../ui/card";
+import { config } from "@/lib/config";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -44,7 +45,7 @@ const ChatSection = () => {
 
       const response: { response: string } = await (
         await fetch(
-          `http://localhost:8000/chat?username=${username}&projectId=${projectId}&query=${JSON.stringify(query)}&api_key=${localStorage.getItem("groq_api_key")}`,
+          `${config.backendUrl}/chat?username=${username}&projectId=${projectId}&query=${JSON.stringify(query)}&api_key=${localStorage.getItem("groq_api_key")}`,
           {
             method: "POST",
           },

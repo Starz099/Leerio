@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { FileText, Sparkles, Loader2, CheckCircle } from "lucide-react";
+import { config } from "@/lib/config";
 
 const SummarySection = () => {
   const [summary, setSummary] = useState<string>("");
@@ -20,7 +21,7 @@ const SummarySection = () => {
     try {
       const response: { response: string } = await (
         await fetch(
-          `http://localhost:8000/summary?username=${username}&projectId=${projectId}&api_key=${localStorage.getItem("groq_api_key")}`,
+          `${config.backendUrl}/summary?username=${username}&projectId=${projectId}&api_key=${localStorage.getItem("groq_api_key")}`,
           {
             method: "POST",
           },

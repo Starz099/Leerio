@@ -13,7 +13,7 @@ import {
   CheckCircle,
   Music,
 } from "lucide-react";
-import { Progress } from "../ui/progress";
+import { config } from "@/lib/config";
 
 const ReadAloudSection = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -128,12 +128,12 @@ const ReadAloudSection = () => {
       setProgress(0);
       console.log(
         "Fetching from:",
-        `http://localhost:8000/read-aloud?username=${username}&projectId=${projectId}`,
+        `${config.backendUrl}/read-aloud?username=${username}&projectId=${projectId}`,
       );
 
       const response: { response: string } = await (
         await fetch(
-          `http://localhost:8000/read-aloud?username=${username}&projectId=${projectId}`,
+          `${config.backendUrl}/read-aloud?username=${username}&projectId=${projectId}`,
           {
             method: "POST",
           },

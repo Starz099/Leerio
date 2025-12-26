@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { FileText, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { config } from "@/lib/config";
 
 interface Project {
   owner: string;
@@ -24,7 +25,7 @@ const RecentProjects = ({ username }: { username: string }) => {
       try {
         setLoading(true);
         const res = await fetch(
-          `http://localhost:8000/projects?username=${username}`,
+          `${config.backendUrl}/projects?username=${username}`,
           {
             method: "GET",
           },

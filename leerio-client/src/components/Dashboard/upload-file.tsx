@@ -2,6 +2,7 @@
 import { Upload } from "lucide-react";
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { config } from "@/lib/config";
 
 interface UploadFileProps {
   username: string;
@@ -24,7 +25,7 @@ const UploadFile = ({ username }: UploadFileProps) => {
       formData.append("pdf", file);
       formData.append("username", username);
 
-      const res = await fetch("http://localhost:8000/upload", {
+      const res = await fetch(`${config.backendUrl}/upload`, {
         method: "POST",
         body: formData,
       });

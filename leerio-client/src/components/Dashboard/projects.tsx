@@ -5,6 +5,7 @@ import { Card } from "../ui/card";
 import { FileText, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Input } from "../ui/input";
+import { config } from "@/lib/config";
 
 interface Project {
   owner: string;
@@ -25,7 +26,7 @@ const Projects = ({ username }: { username: string }) => {
       try {
         setLoading(true);
         const res = await fetch(
-          `http://localhost:8000/projects?username=${username}`,
+          `${config.backendUrl}/projects?username=${username}`,
           {
             method: "GET",
           },
