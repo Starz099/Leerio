@@ -13,10 +13,10 @@ export const chat = async (req: Request, res: Response) => {
   const username = req.query.username as string;
   const projectId = req.query.projectId as string;
   const q = req.query.query as string;
+  const groq_api_key =
+    (typeof req.query.api_key === "string" ? req.query.api_key : undefined) ||
+    (req.headers["x-api-key"] as string | undefined);
 
-  console.log("Username:", username);
-  console.log("Project ID:", projectId);
-  console.log("Request Body:", JSON.parse(q));
   const query: { chatHistory: ChatMessage[]; query: string } = JSON.parse(q);
 
   try {
@@ -29,8 +29,11 @@ export const chat = async (req: Request, res: Response) => {
       return;
     }
     // generate a chat message with gemini with context of the chat history.
-    const rephrasedQuery = await rephraseQuery(query.chatHistory, query.query);
-    console.log("Rephrased Query: ", rephrasedQuery);
+    const rephrasedQuery = await rephraseQuery(
+      query.chatHistory,
+      query.query,
+      groq_api_key
+    );
 
     // get embedded query vector for the rephrased query.
     const queryVector = await getGoogleEmbeddings().embedQuery(
@@ -47,15 +50,12 @@ export const chat = async (req: Request, res: Response) => {
       },
     });
 
-    console.log("Search Results: ", searchResults);
-
     // send the generated message and chunked data to the llm to get a response.
     const llmResponse = await chatWithLLMwithContext(
       rephrasedQuery as string,
-      searchResults
+      searchResults,
+      groq_api_key
     );
-
-    console.log("LLM Response: ", llmResponse);
 
     res.json({ response: llmResponse });
   } catch (error) {

@@ -20,7 +20,7 @@ const SummarySection = () => {
     try {
       const response: { response: string } = await (
         await fetch(
-          `http://localhost:8000/summary?username=${username}&projectId=${projectId}`,
+          `http://localhost:8000/summary?username=${username}&projectId=${projectId}&api_key=${localStorage.getItem("groq_api_key")}`,
           {
             method: "POST",
           },

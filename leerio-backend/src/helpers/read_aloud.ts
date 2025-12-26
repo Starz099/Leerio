@@ -13,9 +13,7 @@ interface ChatMessage {
 export const getTextOfPdf = async (req: Request, res: Response) => {
   const username = req.query.username as string;
   const projectId = req.query.projectId as string;
-
-  console.log("Username:", username);
-  console.log("Project ID:", projectId);
+  
 
   try {
     const project = await Project.findOne({

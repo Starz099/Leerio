@@ -5,6 +5,9 @@ import { Chunks } from "../schema/chunks.js";
 export const summary = async (req: Request, res: Response) => {
   const username = req.query.username as string;
   const projectId = req.query.projectId as string;
+  const groq_api_key =
+    (typeof req.query.api_key === "string" ? req.query.api_key : undefined) ||
+    (req.headers["x-api-key"] as string | undefined);
 
   console.log("Username:", username);
   console.log("Project ID:", projectId);
@@ -26,7 +29,7 @@ export const summary = async (req: Request, res: Response) => {
       for (let i = 0; i < chunks.chunks.length; i += 3) {
         const chunkGroup = chunks.chunks.slice(i, i + 3);
 
-        const res = await summariseChunks(chunkGroup);
+        const res = await summariseChunks(chunkGroup, groq_api_key);
         summaries.push(res as string);
       }
 
@@ -46,7 +49,7 @@ export const summary = async (req: Request, res: Response) => {
       return;
     }
 
-    const finalSummary = await summariseFile(chunks.summaries);
+    const finalSummary = await summariseFile(chunks.summaries, groq_api_key);
     console.log("Final Summary:", finalSummary);
     res.json({ response: finalSummary });
   } catch (error) {

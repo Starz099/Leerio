@@ -9,11 +9,27 @@ interface ChatMessage {
   message: string;
 }
 
-export async function rephraseQuery(chatHistory: ChatMessage[], query: string) {
+export async function rephraseQuery(
+  chatHistory: ChatMessage[],
+  query: string,
+  groq_api_key?: string
+) {
+  const resolveGroqApiKey = (candidate?: string): string | undefined => {
+    const v = candidate?.trim();
+    if (!v || v.toLowerCase() === "null" || v.toLowerCase() === "undefined") {
+      const envKey = process.env.GROQ_API_KEY?.trim();
+      return envKey && envKey.length > 0 ? envKey : undefined;
+    }
+    return v;
+  };
+
+  const api_key = resolveGroqApiKey(groq_api_key);
+  console.log("api_key:", api_key);
   const rephraseModel = new ChatGroq({
     model: "llama-3.3-70b-versatile",
     temperature: 0,
     maxRetries: 2,
+    ...(api_key ? { apiKey: api_key } : {}),
   });
 
   const conversationContext = chatHistory
@@ -44,18 +60,30 @@ Now rephrase the following question to be more clear and contextually complete:`
   ]);
 
   const result = aiMsg.content;
-  console.log("Rephrased message:", result);
   return result;
 }
 
 export async function chatWithLLMwithContext(
   rephrasedQuery: string,
-  contextChunks: QueryResponse<RecordMetadata>
+  contextChunks: QueryResponse<RecordMetadata>,
+  groq_api_key?: string
 ) {
+  const resolveGroqApiKey = (candidate?: string): string | undefined => {
+    const v = candidate?.trim();
+    if (!v || v.toLowerCase() === "null" || v.toLowerCase() === "undefined") {
+      const envKey = process.env.GROQ_API_KEY?.trim();
+      return envKey && envKey.length > 0 ? envKey : undefined;
+    }
+    return v;
+  };
+
+  const api_key = resolveGroqApiKey(groq_api_key);
+
   const rephraseModel = new ChatGroq({
     model: "llama-3.3-70b-versatile",
     temperature: 0,
     maxRetries: 2,
+    ...(api_key ? { apiKey: api_key } : {}),
   });
 
   const systemPrompt = `You are a helpful assistant that answers user questions based on provided context chunks from documents.
@@ -88,11 +116,23 @@ Now answer the following question using the above context:`;
   return result;
 }
 
-export async function summariseChunks(chunks: string[]) {
+export async function summariseChunks(chunks: string[], groq_api_key?: string) {
+  const resolveGroqApiKey = (candidate?: string): string | undefined => {
+    const v = candidate?.trim();
+    if (!v || v.toLowerCase() === "null" || v.toLowerCase() === "undefined") {
+      const envKey = process.env.GROQ_API_KEY?.trim();
+      return envKey && envKey.length > 0 ? envKey : undefined;
+    }
+    return v;
+  };
+
+  const api_key = resolveGroqApiKey(groq_api_key);
+
   const rephraseModel = new ChatGroq({
     model: "llama-3.3-70b-versatile",
     temperature: 0,
     maxRetries: 2,
+    ...(api_key ? { apiKey: api_key } : {}),
   });
 
   const systemPrompt = `You are a helpful assistant that summarizes text chunks into concise summaries.
@@ -126,11 +166,26 @@ Format: - Bullet Point 1
   return result;
 }
 
-export async function summariseFile(summaries: string[]) {
+export async function summariseFile(
+  summaries: string[],
+  groq_api_key?: string
+) {
+  const resolveGroqApiKey = (candidate?: string): string | undefined => {
+    const v = candidate?.trim();
+    if (!v || v.toLowerCase() === "null" || v.toLowerCase() === "undefined") {
+      const envKey = process.env.GROQ_API_KEY?.trim();
+      return envKey && envKey.length > 0 ? envKey : undefined;
+    }
+    return v;
+  };
+
+  const api_key = resolveGroqApiKey(groq_api_key);
+
   const rephraseModel = new ChatGroq({
     model: "llama-3.3-70b-versatile",
     temperature: 0,
     maxRetries: 2,
+    ...(api_key ? { apiKey: api_key } : {}),
   });
 
   const systemPrompt = `You are a helpful assistant that summarizes multiple summaries into a concise overall summary.

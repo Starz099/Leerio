@@ -44,7 +44,7 @@ const ChatSection = () => {
 
       const response: { response: string } = await (
         await fetch(
-          `http://localhost:8000/chat?username=${username}&projectId=${projectId}&query=${JSON.stringify(query)}`,
+          `http://localhost:8000/chat?username=${username}&projectId=${projectId}&query=${JSON.stringify(query)}&api_key=${localStorage.getItem("groq_api_key")}`,
           {
             method: "POST",
           },
