@@ -3,7 +3,7 @@ import { Project } from "../schema/projects.js";
 import { chatWithLLMwithContext, rephraseQuery } from "../utils/ai.js";
 import { getGoogleEmbeddings } from "../utils/embedding.js";
 import { getPineconeIndex } from "../utils/pinecone.js";
-import { PDFParse } from "pdf-parse";
+// pdf-parse will be dynamically imported when needed
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -13,7 +13,6 @@ interface ChatMessage {
 export const getTextOfPdf = async (req: Request, res: Response) => {
   const username = req.query.username as string;
   const projectId = req.query.projectId as string;
-  
 
   try {
     const project = await Project.findOne({
@@ -25,14 +24,14 @@ export const getTextOfPdf = async (req: Request, res: Response) => {
       return;
     }
 
-    const pdfData = new PDFParse({ url: project.fileUrl as string });
-    const textResult = await pdfData.getText();
-    // console.log("Extracted PDF text for read aloud.", textResult);
-
-    // Combine all page text into a single string
-    const combinedText = textResult.pages
-      .map((page: { text: string; num: number }) => page.text)
-      .join("\n\n");
+    const mod: any = await import("pdf-parse");
+    const pdfParse: any = mod.default ?? mod;
+    const resp = await fetch(project.fileUrl as string);
+    const arrayBuffer = await resp.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const textResult = await pdfParse(buffer);
+    // Combine all text into a single string
+    const combinedText = textResult.text;
 
     res.json({ response: combinedText });
   } catch (error) {
