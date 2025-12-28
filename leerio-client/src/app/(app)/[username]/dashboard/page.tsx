@@ -1,11 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import UploadFile from "@/components/Dashboard/upload-file";
 import { Suspense, use } from "react";
+import UploadFile from "@/features/dashboard/components/upload-file";
 
 const RecentProjects = dynamic(
-  () => import("@/components/Dashboard/recent-projects"),
+  () => import("@/features/dashboard/components/recent-projects"),
   { ssr: false },
 );
 

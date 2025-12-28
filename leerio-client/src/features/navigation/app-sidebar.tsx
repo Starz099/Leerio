@@ -6,10 +6,11 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar";
 import { UserButton } from "@clerk/nextjs";
+import { FileImage, LayoutGrid, PackagePlus, User } from "lucide-react";
 import Link from "next/link";
-import { ThemeToggleButton } from "./Landing/Navbar/theme-switch";
 import { usePathname } from "next/navigation";
-import { Layers, LayoutGrid, FileImage, PackagePlus, User } from "lucide-react";
+import Image from "next/image";
+import { ThemeToggleButton } from "@/features/theme/theme-switch";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -19,10 +20,16 @@ export function AppSidebar() {
     <Sidebar variant="floating" collapsible="icon">
       <SidebarHeader>
         <Link
-          className="flex w-full items-center gap-2 text-2xl font-bold group-data-[collapsible=icon]:justify-center"
+          className="flex w-full items-center gap-2 text-3xl font-bold group-data-[collapsible=icon]:justify-center"
           href="/"
         >
-          <Layers className="h-6 w-6" />
+          <Image
+            src="/logo.png"
+            alt="Leerio Logo"
+            width={36}
+            height={36}
+            className="size-10"
+          />
           <span className="group-data-[collapsible=icon]:hidden">Leerio</span>
         </Link>
       </SidebarHeader>

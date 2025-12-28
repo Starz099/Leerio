@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { FileText, ChevronRight } from "lucide-react";
+import { ChevronRight, FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { config } from "@/lib/config";
 
 interface Project {

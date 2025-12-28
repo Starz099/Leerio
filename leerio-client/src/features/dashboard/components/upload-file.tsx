@@ -1,7 +1,6 @@
 "use client";
 import { Upload } from "lucide-react";
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
+import { useRef, useState } from "react";
 import { config } from "@/lib/config";
 
 interface UploadFileProps {

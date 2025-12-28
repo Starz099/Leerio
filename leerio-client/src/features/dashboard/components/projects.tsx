@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card } from "../ui/card";
 import { FileText, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Input } from "../ui/input";
+
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { config } from "@/lib/config";
 
 interface Project {

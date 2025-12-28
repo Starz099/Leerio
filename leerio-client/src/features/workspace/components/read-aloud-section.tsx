@@ -1,18 +1,18 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
-import { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useRef, useState } from "react";
 import {
-  Volume2,
-  Play,
-  Pause,
-  Square,
-  Loader2,
   CheckCircle,
+  Loader2,
   Music,
+  Play,
+  Square,
+  Volume2,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { config } from "@/lib/config";
 
 const ReadAloudSection = () => {
@@ -261,6 +261,12 @@ const ReadAloudSection = () => {
               </>
             )}
           </div>
+
+          {isSpeaking && (
+            <p className="text-muted-foreground text-center text-xs">
+              Progress: {progress}%
+            </p>
+          )}
 
           {/* Info */}
           <p className="text-muted-foreground text-center text-xs">

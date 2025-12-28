@@ -1,9 +1,10 @@
 "use client";
-import { Button } from "../ui/button";
 import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import ReadAloudSection from "./read-aloud-section";
 import ChatSection from "./chat-section";
 import SummarySection from "./summary-section";
-import ReadAloudSection from "./read-aloud-section";
 const Workbench = () => {
   const [selectedMode, setSelectedMode] = useState<
     "chat" | "read-aloud" | "summarise"

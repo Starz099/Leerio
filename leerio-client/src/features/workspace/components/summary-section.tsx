@@ -1,10 +1,11 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { FileText, Sparkles, Loader2, CheckCircle } from "lucide-react";
+import { CheckCircle, FileText, Loader2, Sparkles } from "lucide-react";
+import { usePathname } from "next/navigation";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { config } from "@/lib/config";
 
 const SummarySection = () => {

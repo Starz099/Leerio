@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Bot, Loader2, Send, Sparkles, User } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Send, Bot, User, Sparkles, Loader2 } from "lucide-react";
-import { Card } from "../ui/card";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { config } from "@/lib/config";
 
 interface ChatMessage {

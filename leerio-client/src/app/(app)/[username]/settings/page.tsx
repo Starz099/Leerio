@@ -1,21 +1,22 @@
 "use client";
 
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
+import { useEffect, useRef } from "react";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardContent,
-} from "../../../components/ui/card";
-import { Separator } from "../../../components/ui/separator";
-import { useEffect, useRef } from "react";
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
-  saveGroqApiKey,
   clearGroqApiKey,
   getGroqApiKey,
-} from "../../../lib/api_key.utils";
+  saveGroqApiKey,
+} from "@/lib/api_key.utils";
 
 const Page = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +69,7 @@ const Page = () => {
             </a>
             .
           </p>
-          <Input ref={inputRef} placeholder="sk-..." />
+          <Input ref={inputRef} placeholder="gsk_..." />
           <div className="flex items-center gap-2">
             <Button onClick={saveKey}>add Key</Button>
             <Button variant="outline" onClick={clearKey}>

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import ChatSection from "@/components/Work/chat-section";
-import SummarySection from "@/components/Work/summary-section";
-import ReadAloudSection from "@/components/Work/read-aloud-section";
+import ChatSection from "@/features/workspace/components/chat-section";
+import SummarySection from "@/features/workspace/components/summary-section";
+import ReadAloudSection from "@/features/workspace/components/read-aloud-section";
 import { MessageSquare, FileText, Volume2 } from "lucide-react";
 
 type Mode = "chat" | "read-aloud" | "summarise";

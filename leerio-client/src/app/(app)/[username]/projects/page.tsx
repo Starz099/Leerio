@@ -1,6 +1,6 @@
 "use client";
 
-import Projects from "@/components/Dashboard/projects";
+import Projects from "@/features/dashboard/components/projects";
 import { use } from "react";
 
 const Page = ({ params }: { params: Promise<{ username: string }> }) => {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggleButton } from "./theme-switch";
+import { ThemeToggleButton } from "@/features/theme/theme-switch";
 import {
   SignedIn,
   SignedOut,
