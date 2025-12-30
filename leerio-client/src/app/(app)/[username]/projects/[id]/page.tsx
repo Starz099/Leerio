@@ -12,29 +12,24 @@ import { MessageSquare, FileText, Volume2 } from "lucide-react";
 type Mode = "chat" | "read-aloud" | "summarise";
 
 const ProjectWorkspace = () => {
-  // Initialize with default, then sync from localStorage on client
-  const [selectedMode, setSelectedMode] = useState<Mode>("chat");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // Load saved mode from localStorage after mount
+  // Initialize state from localStorage using lazy initializer
+  const [selectedMode, setSelectedMode] = useState<Mode>(() => {
+    if (typeof window === "undefined") return "chat";
     const savedMode = localStorage.getItem("selectedMode");
     if (
       savedMode === "chat" ||
       savedMode === "read-aloud" ||
       savedMode === "summarise"
     ) {
-      setSelectedMode(savedMode as Mode);
+      return savedMode as Mode;
     }
-    setMounted(true);
-  }, []);
+    return "chat";
+  });
 
   // Save mode to localStorage whenever it changes
   useEffect(() => {
-    if (mounted) {
-      localStorage.setItem("selectedMode", selectedMode);
-    }
-  }, [selectedMode, mounted]);
+    localStorage.setItem("selectedMode", selectedMode);
+  }, [selectedMode]);
 
   const pathname = usePathname();
   const pathParts = useMemo(

@@ -115,7 +115,7 @@ const Preview = ({
         <Card className="w-full max-w-5xl border shadow-sm">
           <div className="flex flex-col gap-4 p-2 sm:p-3">
             {showPlaceholder && (
-              <div className="bg-muted/60 flex min-h-[420px] w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed text-center">
+              <div className="bg-muted/60 flex min-h-105 w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed text-center">
                 <p className="text-lg font-semibold">No document selected</p>
                 <p className="text-muted-foreground text-sm">
                   Open a document workspace to see its preview here.
@@ -124,7 +124,7 @@ const Preview = ({
             )}
 
             {!showPlaceholder && status === "loading" && (
-              <div className="bg-muted/50 flex min-h-[420px] w-full flex-col items-center justify-center gap-3 rounded-md border text-center">
+              <div className="bg-muted/50 flex min-h-105 w-full flex-col items-center justify-center gap-3 rounded-md border text-center">
                 <Loader2 className="text-primary h-7 w-7 animate-spin" />
                 <p className="text-muted-foreground text-sm">
                   Loading preview...
@@ -133,7 +133,7 @@ const Preview = ({
             )}
 
             {!showPlaceholder && status === "error" && (
-              <div className="bg-destructive/10 border-destructive/40 flex min-h-[420px] w-full flex-col items-center justify-center gap-2 rounded-md border text-center">
+              <div className="bg-destructive/10 border-destructive/40 flex min-h-105 w-full flex-col items-center justify-center gap-2 rounded-md border text-center">
                 <AlertCircle className="text-destructive h-6 w-6" />
                 <p className="text-destructive text-sm font-medium">
                   {error ?? "Unable to load preview."}
@@ -146,7 +146,7 @@ const Preview = ({
                 <iframe
                   src={pdfUrl}
                   title="PDF Preview"
-                  className="h-[280px] w-full sm:h-[360px] [&::-webkit-scrollbar]:hidden"
+                  className="h-70 w-full sm:h-90 [&::-webkit-scrollbar]:hidden"
                   style={{ scrollbarWidth: "none" }}
                   allow="fullscreen"
                 />
@@ -154,7 +154,7 @@ const Preview = ({
             )}
 
             {!showPlaceholder && status === "ready" && !pdfUrl && (
-              <div className="bg-muted/50 flex min-h-[420px] w-full flex-col items-center justify-center gap-3 rounded-md border text-center">
+              <div className="bg-muted/50 flex min-h-105 w-full flex-col items-center justify-center gap-3 rounded-md border text-center">
                 <p className="text-lg font-semibold">Preview unavailable</p>
                 <p className="text-muted-foreground text-sm">
                   We could not find a Cloudinary URL for this document.
