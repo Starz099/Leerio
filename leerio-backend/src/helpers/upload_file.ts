@@ -85,6 +85,10 @@ export const handleFileUpload = async (req: Request, res: Response) => {
 
         console.log("Chunks stored in Pinecone vector DB.");
 
+        const previewUrl = `https://docs.google.com/gview?url=${encodeURIComponent(
+          result?.secure_url as string
+        )}&embedded=true`;
+
         return res.json({
           message: "File uploaded successfully",
           url: result?.secure_url,

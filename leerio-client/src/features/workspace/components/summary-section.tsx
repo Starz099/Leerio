@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CheckCircle, FileText, Loader2, Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -13,7 +13,7 @@ const SummarySection = () => {
   const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
 
-  const pathParts = pathname.split("/");
+  const pathParts = useMemo(() => pathname.split("/"), [pathname]);
   const username = pathParts[1];
   const projectId = pathParts[3];
 
@@ -37,10 +37,10 @@ const SummarySection = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full w-full items-center justify-center p-8">
-        <Card className="w-full max-w-md">
+  const renderSummaryContent = () => {
+    if (isLoading) {
+      return (
+        <Card className="w-full">
           <CardContent className="flex flex-col items-center justify-center space-y-4 py-12">
             <div className="relative">
               <div className="absolute inset-0 animate-ping">
@@ -57,15 +57,12 @@ const SummarySection = () => {
             <Loader2 className="text-muted-foreground h-6 w-6 animate-spin" />
           </CardContent>
         </Card>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (summary !== "") {
-    return (
-      <div className="h-full w-full overflow-auto p-6">
-        <div className="mx-auto max-w-4xl space-y-6">
-          {/* Header */}
+    if (summary !== "") {
+      return (
+        <div className="space-y-4">
           <div className="flex items-center gap-3 border-b pb-4">
             <div className="p-2">
               <CheckCircle className="text-primary h-6 w-6" />
@@ -78,7 +75,6 @@ const SummarySection = () => {
             </div>
           </div>
 
-          {/* Summary Content */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -93,7 +89,6 @@ const SummarySection = () => {
             </CardContent>
           </Card>
 
-          {/* Actions */}
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -105,13 +100,11 @@ const SummarySection = () => {
             </Button>
           </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
-    <div className="flex h-full w-full items-center justify-center p-8">
-      <Card className="w-full max-w-md">
+    return (
+      <Card className="w-full">
         <CardContent className="flex flex-col items-center justify-center space-y-6 py-12">
           <div className="p-4">
             <FileText className="text-primary h-12 w-12" />
@@ -147,6 +140,12 @@ const SummarySection = () => {
           </Button>
         </CardContent>
       </Card>
+    );
+  };
+
+  return (
+    <div className="bg-card/50 h-full overflow-auto rounded-md border p-4">
+      {renderSummaryContent()}
     </div>
   );
 };

@@ -181,7 +181,7 @@ const ReadAloudSection = () => {
   };
 
   return (
-    <div className="flex h-full w-full items-center justify-center p-8">
+    <div className="bg-card/50 flex h-full items-center justify-center rounded-md border p-4 sm:p-6">
       <Card className="w-full max-w-lg">
         <CardHeader>
           <div className="flex items-center gap-3">
@@ -197,7 +197,6 @@ const ReadAloudSection = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Features List */}
           {!isSpeaking && !isLoading && (
             <ul className="text-muted-foreground space-y-2 text-sm">
               <li className="flex items-start gap-2">
@@ -215,7 +214,6 @@ const ReadAloudSection = () => {
             </ul>
           )}
 
-          {/* Loading State */}
           {isLoading && (
             <div className="flex flex-col items-center justify-center space-y-4 py-8">
               <div className="relative">
@@ -231,7 +229,6 @@ const ReadAloudSection = () => {
             </div>
           )}
 
-          {/* Controls */}
           <div className="flex gap-2">
             {!isSpeaking ? (
               <Button
@@ -248,17 +245,15 @@ const ReadAloudSection = () => {
                 {isLoading ? "Loading..." : "Start Reading"}
               </Button>
             ) : (
-              <>
-                <Button
-                  className="flex-1 gap-2"
-                  size="lg"
-                  variant="secondary"
-                  onClick={stop}
-                >
-                  <Square className="h-5 w-5" />
-                  Stop
-                </Button>
-              </>
+              <Button
+                className="flex-1 gap-2"
+                size="lg"
+                variant="secondary"
+                onClick={stop}
+              >
+                <Square className="h-5 w-5" />
+                Stop
+              </Button>
             )}
           </div>
 
@@ -268,7 +263,6 @@ const ReadAloudSection = () => {
             </p>
           )}
 
-          {/* Info */}
           <p className="text-muted-foreground text-center text-xs">
             Use natural voice synthesis to listen to your document hands-free
           </p>

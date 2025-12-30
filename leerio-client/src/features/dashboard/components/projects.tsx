@@ -33,12 +33,14 @@ const Projects = ({ username }: { username: string }) => {
           },
         );
         const data = await res.json();
-        const ps = data.projects.map((project: Project) => ({
-          owner: project.owner,
-          projectId: project.projectId,
-          publicId: project.publicId,
-          createdAt: project.createdAt,
-        }));
+        const ps = data.projects
+          .map((project: Project) => ({
+            owner: project.owner,
+            projectId: project.projectId,
+            publicId: project.publicId,
+            createdAt: project.createdAt,
+          }))
+          .reverse();
         setProjects(ps);
         setFilteredProjects(ps);
       } catch (error) {

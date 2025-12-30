@@ -1,34 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import ChatSection from "@/features/workspace/components/chat-section";
 import SummarySection from "@/features/workspace/components/summary-section";
 import ReadAloudSection from "@/features/workspace/components/read-aloud-section";
+import Preview from "@/features/workspace/components/preview";
 import { MessageSquare, FileText, Volume2 } from "lucide-react";
 
 type Mode = "chat" | "read-aloud" | "summarise";
 
 const ProjectWorkspace = () => {
-  // Initialize state with saved mode from localStorage
-  const [selectedMode, setSelectedMode] = useState<Mode>(() => {
-    if (typeof window !== "undefined") {
-      const savedMode = localStorage.getItem("selectedMode");
-      if (
-        savedMode === "chat" ||
-        savedMode === "read-aloud" ||
-        savedMode === "summarise"
-      ) {
-        return savedMode as Mode;
-      }
+  // Initialize with default, then sync from localStorage on client
+  const [selectedMode, setSelectedMode] = useState<Mode>("chat");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Load saved mode from localStorage after mount
+    const savedMode = localStorage.getItem("selectedMode");
+    if (
+      savedMode === "chat" ||
+      savedMode === "read-aloud" ||
+      savedMode === "summarise"
+    ) {
+      setSelectedMode(savedMode as Mode);
     }
-    return "chat";
-  });
+    setMounted(true);
+  }, []);
 
   // Save mode to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("selectedMode", selectedMode);
-  }, [selectedMode]);
+    if (mounted) {
+      localStorage.setItem("selectedMode", selectedMode);
+    }
+  }, [selectedMode, mounted]);
+
+  const pathname = usePathname();
+  const pathParts = useMemo(
+    () => pathname.split("/").filter(Boolean),
+    [pathname],
+  );
+  const username = pathParts[0];
+  const projectId = pathParts[2];
 
   const modes = [
     {
@@ -95,10 +109,18 @@ const ProjectWorkspace = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-hidden px-2">
-        {selectedMode === "chat" && <ChatSection />}
-        {selectedMode === "summarise" && <SummarySection />}
-        {selectedMode === "read-aloud" && <ReadAloudSection />}
+      <div className="flex-1 overflow-hidden px-2 pt-2">
+        <div className="grid h-full w-full gap-2 lg:grid-cols-[minmax(320px,40%)_1fr]">
+          <div className="bg-card/50 h-full rounded-md border">
+            <Preview projectId={projectId} username={username} />
+          </div>
+
+          <div className="h-full">
+            {selectedMode === "chat" && <ChatSection />}
+            {selectedMode === "summarise" && <SummarySection />}
+            {selectedMode === "read-aloud" && <ReadAloudSection />}
+          </div>
+        </div>
       </div>
     </div>
   );

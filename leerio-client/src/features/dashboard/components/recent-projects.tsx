@@ -32,12 +32,15 @@ const RecentProjects = ({ username }: { username: string }) => {
           },
         );
         const data = await res.json();
-        const ps = data.projects.slice(0, 3).map((project: Project) => ({
-          owner: project.owner,
-          projectId: project.projectId,
-          publicId: project.publicId,
-          createdAt: project.createdAt,
-        }));
+        const ps = data.projects
+          .reverse()
+          .slice(0, 3)
+          .map((project: Project) => ({
+            owner: project.owner,
+            projectId: project.projectId,
+            publicId: project.publicId,
+            createdAt: project.createdAt,
+          }));
         setProjects(ps);
       } catch (error) {
         console.error("Failed to fetch projects:", error);

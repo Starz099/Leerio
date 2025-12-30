@@ -67,9 +67,11 @@ const ChatSection = () => {
   };
 
   return (
-    <div className="bg-background relative flex h-full w-full flex-col">
-      {/* Chat Messages Area */}
-      <div className="flex-1 space-y-4 overflow-y-auto p-6 pb-32">
+    <div className="bg-background relative flex h-full w-full flex-col overflow-hidden rounded-md border">
+      <div
+        className="flex-1 space-y-4 overflow-y-auto p-4 pb-28 [&::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: "none" }}
+      >
         {chat.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center space-y-4 text-center">
             <div className="p-4">
@@ -130,8 +132,7 @@ const ChatSection = () => {
         )}
       </div>
 
-      {/* Input Area */}
-      <div className="bg-background absolute right-0 bottom-0 left-0 border-t p-4">
+      <div className="bg-background absolute right-0 bottom-0 left-0 border-t p-2">
         <div className="flex gap-2">
           <Input
             value={inputValue}
