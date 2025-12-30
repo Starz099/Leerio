@@ -1,14 +1,6 @@
 import { type Request, type Response } from "express";
 import { Project } from "../schema/projects.js";
-import { chatWithLLMwithContext, rephraseQuery } from "../utils/ai.js";
-import { getGoogleEmbeddings } from "../utils/embedding.js";
-import { getPineconeIndex } from "../utils/pinecone.js";
-// pdf-parse will be dynamically imported when needed
-
-interface ChatMessage {
-  role: "user" | "assistant";
-  message: string;
-}
+import { PDFParse } from "pdf-parse";
 
 export const getTextOfPdf = async (req: Request, res: Response) => {
   const username = req.query.username as string;
@@ -24,14 +16,14 @@ export const getTextOfPdf = async (req: Request, res: Response) => {
       return;
     }
 
-    const mod: any = await import("pdf-parse");
-    const pdfParse: any = mod.default ?? mod;
-    const resp = await fetch(project.fileUrl as string);
-    const arrayBuffer = await resp.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const textResult = await pdfParse(buffer);
-    // Combine all text into a single string
-    const combinedText = textResult.text;
+    const pdfData = new PDFParse({ url: project.fileUrl as string });
+    const textResult = await pdfData.getText();
+    // console.log("Extracted PDF text for read aloud.", textResult);
+
+    // Combine all page text into a single string
+    const combinedText = textResult.pages
+      .map((page: { text: string; num: number }) => page.text)
+      .join("\n\n");
 
     res.json({ response: combinedText });
   } catch (error) {
