@@ -108,7 +108,7 @@ const UploadFile = ({ username }: UploadFileProps) => {
           </p>
         </div>
         <p className="text-muted-foreground text-xs">
-          Supports PDF files up to 100MB
+          Supports PDF files up to 10MB
         </p>
       </div>
     </div>

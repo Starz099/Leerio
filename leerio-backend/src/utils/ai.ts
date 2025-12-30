@@ -26,7 +26,7 @@ export async function rephraseQuery(
   const api_key = resolveGroqApiKey(groq_api_key);
   console.log("api_key:", api_key);
   const rephraseModel = new ChatGroq({
-    model: "llama-3.3-70b-versatile",
+    model: "llama-3.1-8b-instant",
     temperature: 0,
     maxRetries: 2,
     ...(api_key ? { apiKey: api_key } : {}),
@@ -80,7 +80,7 @@ export async function chatWithLLMwithContext(
   const api_key = resolveGroqApiKey(groq_api_key);
 
   const rephraseModel = new ChatGroq({
-    model: "llama-3.3-70b-versatile",
+    model: "llama-3.1-8b-instant",
     temperature: 0,
     maxRetries: 2,
     ...(api_key ? { apiKey: api_key } : {}),
@@ -129,7 +129,7 @@ export async function summariseChunks(chunks: string[], groq_api_key?: string) {
   const api_key = resolveGroqApiKey(groq_api_key);
 
   const rephraseModel = new ChatGroq({
-    model: "llama-3.3-70b-versatile",
+    model: "llama-3.1-8b-instant",
     temperature: 0,
     maxRetries: 2,
     ...(api_key ? { apiKey: api_key } : {}),
@@ -182,7 +182,7 @@ export async function summariseFile(
   const api_key = resolveGroqApiKey(groq_api_key);
 
   const rephraseModel = new ChatGroq({
-    model: "llama-3.3-70b-versatile",
+    model: "llama-3.1-8b-instant",
     temperature: 0,
     maxRetries: 2,
     ...(api_key ? { apiKey: api_key } : {}),
@@ -190,7 +190,7 @@ export async function summariseFile(
 
   const systemPrompt = `You are a helpful assistant that summarizes multiple summaries into a concise overall summary.
 Your task is to read the provided summaries and generate a brief overall summary that captures the main points.
-
+output only summary generated.
 Guidelines:
 1. Provide a concise overall summary of the key information from the summaries
 2. Do not hallucinate or add information not present in the summaries
