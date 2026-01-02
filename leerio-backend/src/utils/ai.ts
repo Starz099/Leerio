@@ -24,7 +24,6 @@ export async function rephraseQuery(
   };
 
   const api_key = resolveGroqApiKey(groq_api_key);
-  console.log("api_key:", api_key);
   const rephraseModel = new ChatGroq({
     model: "llama-3.1-8b-instant",
     temperature: 0,

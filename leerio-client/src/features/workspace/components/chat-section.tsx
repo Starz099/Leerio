@@ -1,8 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { Bot, Loader2, Send, Sparkles, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Bot,
+  Loader2,
+  Mic,
+  MicOff,
+  Send,
+  Sparkles,
+  Square,
+  User,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -24,14 +36,52 @@ const ChatSection = () => {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
+  useEffect(() => {
+    if (listening) {
+      setInputValue(transcript);
+    }
+  }, [listening, transcript]);
+
+  const startListening = () => {
+    if (!browserSupportsSpeechRecognition) return;
+    resetTranscript();
+    setInputValue("");
+    SpeechRecognition.startListening({ continuous: true, language: "en-US" });
+  };
+
+  const stopListening = () => {
+    SpeechRecognition.stopListening();
+    setInputValue((current) => current || transcript);
+  };
+
+  const toggleListening = () => {
+    if (listening) {
+      stopListening();
+      return;
+    }
+    startListening();
+  };
 
   const handleSend = async () => {
-    if (!inputValue.trim() || isLoading) return;
+    if (listening) {
+      stopListening();
+    }
+
+    const messageToSend = inputValue.trim();
+
+    if (!messageToSend || isLoading) return;
 
     const chatContext = chat;
     const newQuery: ChatMessage = {
       role: "user",
-      message: inputValue.trim(),
+      message: messageToSend,
     };
 
     setChat([...chat, newQuery]);
@@ -133,7 +183,7 @@ const ChatSection = () => {
       </div>
 
       <div className="bg-background absolute right-0 bottom-0 left-0 border-t p-2">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Input
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -148,6 +198,24 @@ const ChatSection = () => {
             disabled={isLoading}
           />
           <Button
+            type="button"
+            variant={listening ? "secondary" : "outline"}
+            onClick={toggleListening}
+            disabled={isLoading || !browserSupportsSpeechRecognition}
+            className="gap-2"
+          >
+            {browserSupportsSpeechRecognition ? (
+              listening ? (
+                <Square className="h-4 w-4" />
+              ) : (
+                <Mic className="h-4 w-4" />
+              )
+            ) : (
+              <MicOff className="h-4 w-4" />
+            )}
+            {listening ? "Stop" : "Voice"}
+          </Button>
+          <Button
             onClick={handleSend}
             disabled={!inputValue.trim() || isLoading}
             className="gap-2"
@@ -160,6 +228,14 @@ const ChatSection = () => {
             Send
           </Button>
         </div>
+        {!browserSupportsSpeechRecognition && (
+          <p className="text-muted-foreground mt-2 text-xs">
+            Voice input is not supported in this browser.
+          </p>
+        )}
+        {listening && browserSupportsSpeechRecognition && (
+          <p className="text-primary mt-2 text-xs">Listening...</p>
+        )}
       </div>
     </div>
   );
