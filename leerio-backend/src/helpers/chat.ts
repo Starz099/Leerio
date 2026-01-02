@@ -3,6 +3,7 @@ import { Project } from "../schema/projects.js";
 import { chatWithLLMwithContext, rephraseQuery } from "../utils/ai.js";
 import { getGoogleEmbeddings } from "../utils/embedding.js";
 import { getPineconeIndex } from "../utils/pinecone.js";
+import { appendChatMessages } from "./chat_history.js";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -16,6 +17,11 @@ export const chat = async (req: Request, res: Response) => {
   const groq_api_key =
     (typeof req.query.api_key === "string" ? req.query.api_key : undefined) ||
     (req.headers["x-api-key"] as string | undefined);
+
+  if (!username || !projectId) {
+    res.status(400).json({ error: "username and projectId are required" });
+    return;
+  }
 
   const query: { chatHistory: ChatMessage[]; query: string } = JSON.parse(q);
 
@@ -57,8 +63,27 @@ export const chat = async (req: Request, res: Response) => {
       groq_api_key
     );
 
-    res.json({ response: llmResponse });
+    const llmText =
+      typeof llmResponse === "string"
+        ? llmResponse
+        : Array.isArray(llmResponse)
+        ? JSON.stringify(llmResponse)
+        : String(llmResponse);
+
+    const messagesToSave: ChatMessage[] = [
+      { role: "user", message: query.query },
+      { role: "assistant", message: llmText },
+    ];
+
+    const history = await appendChatMessages(
+      username,
+      projectId,
+      messagesToSave
+    );
+
+    res.json({ response: llmText, history });
   } catch (error) {
     console.error("Error fetching projects:", error);
+    res.status(500).json({ error: "Failed to process chat" });
   }
 };

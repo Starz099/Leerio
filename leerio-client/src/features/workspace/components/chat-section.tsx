@@ -36,12 +36,35 @@ const ChatSection = () => {
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const {
     transcript,
     listening,
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (!config.backendUrl || !username || !projectId) return;
+      setIsHistoryLoading(true);
+      try {
+        const res = await fetch(
+          `${config.backendUrl}/chat/history?username=${username}&projectId=${projectId}`,
+        );
+        if (!res.ok) return;
+        const data: { messages?: ChatMessage[] } = await res.json();
+        setChat(data.messages ?? []);
+      } catch (error) {
+        console.error("Error loading chat history:", error);
+      } finally {
+        setIsHistoryLoading(false);
+      }
+    };
+
+    loadHistory();
+  }, [projectId, username]);
 
   useEffect(() => {
     if (listening) {
@@ -94,7 +117,7 @@ const ChatSection = () => {
         query: newQuery.message,
       };
 
-      const response: { response: string } = await (
+      const response: { response: string; history?: ChatMessage[] } = await (
         await fetch(
           `${config.backendUrl}/chat?username=${username}&projectId=${projectId}&query=${JSON.stringify(query)}&api_key=${localStorage.getItem("groq_api_key")}`,
           {
@@ -108,7 +131,7 @@ const ChatSection = () => {
         message: response.response,
       };
 
-      setChat([...chat, newQuery, aiResponse]);
+      setChat(response.history ?? [...chatContext, newQuery, aiResponse]);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -116,10 +139,26 @@ const ChatSection = () => {
     }
   };
 
+  const handleClearHistory = async () => {
+    if (!config.backendUrl || !username || !projectId) return;
+    setIsClearing(true);
+    try {
+      await fetch(
+        `${config.backendUrl}/chat/clear?username=${username}&projectId=${projectId}`,
+        { method: "POST" },
+      );
+      setChat([]);
+    } catch (error) {
+      console.error("Error clearing chat history:", error);
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
   return (
     <div className="bg-background relative flex h-full w-full flex-col overflow-hidden rounded-md border">
       <div
-        className="flex-1 space-y-4 overflow-y-auto p-4 pb-28 [&::-webkit-scrollbar]:hidden"
+        className="h-[70vh] space-y-4 overflow-y-auto p-4 pb-28 [&::-webkit-scrollbar]:hidden"
         style={{ scrollbarWidth: "none" }}
       >
         {chat.length === 0 ? (
@@ -180,6 +219,21 @@ const ChatSection = () => {
             </Card>
           </div>
         )}
+        {isHistoryLoading && !isLoading && (
+          <div className="flex justify-start gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+              <Bot className="text-primary h-5 w-5" />
+            </div>
+            <Card className="bg-muted max-w-[80%] p-4">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-muted-foreground text-sm">
+                  Loading history...
+                </span>
+              </div>
+            </Card>
+          </div>
+        )}
       </div>
 
       <div className="bg-background absolute right-0 bottom-0 left-0 border-t p-2">
@@ -226,6 +280,18 @@ const ChatSection = () => {
               <Send className="h-4 w-4" />
             )}
             Send
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClearHistory}
+            disabled={isClearing || isLoading}
+          >
+            {isClearing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Clear Chat"
+            )}
           </Button>
         </div>
         {!browserSupportsSpeechRecognition && (

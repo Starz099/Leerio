@@ -12,6 +12,10 @@ import { getProjects } from "./helpers/getProjects.js";
 import { chat } from "./helpers/chat.js";
 import { summary } from "./helpers/summary.js";
 import { getTextOfPdf } from "./helpers/read_aloud.js";
+import {
+  clearChatHistoryHandler,
+  getChatHistoryHandler,
+} from "./helpers/chat_history.js";
 
 // Initialize Cloudinary with environment variables
 initializeCloudinary();
@@ -28,6 +32,8 @@ app.post("/upload", upload.single("pdf"), handleFileUpload);
 
 app.get("/projects", getProjects);
 app.post("/chat", chat);
+app.get("/chat/history", getChatHistoryHandler);
+app.post("/chat/clear", clearChatHistoryHandler);
 app.post("/read-aloud", getTextOfPdf);
 app.post("/summary", summary);
 
