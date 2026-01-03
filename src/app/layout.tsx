@@ -10,6 +10,22 @@ const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 export const metadata: Metadata = {
   title: "Leerio",
   description: "Talk to your pdfs",
+  openGraph: {
+    title: "Leerio: Talk to your pdfs",
+    description:
+      "An AI-powered platform to interact with your PDF documents effortlessly.",
+    url: "https://leerio.vercel.app",
+    siteName: "Leerio",
+    images: [
+      {
+        url: "https://leerio.vercel.app/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Leerio cover image",
+      },
+    ],
+    type: "website",
+  },
 };
 
 export default function RootLayout({
