@@ -26,6 +26,13 @@ export const metadata: Metadata = {
     ],
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Leerio: Talk to your PDFs",
+    description:
+      "An AI-powered platform to interact with your PDF documents effortlessly.",
+    images: ["https://leerio.vercel.app/og.png"],
+  },
 };
 
 export default function RootLayout({
