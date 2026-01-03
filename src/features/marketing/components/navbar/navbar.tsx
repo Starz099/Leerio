@@ -28,14 +28,18 @@ const Navbar = () => {
     <nav className="border-border/40 bg-background/95 supports-backdrop-filter:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-end gap-2 text-3xl font-bold">
+          <Link
+            href="/"
+            className="text-muted-foreground flex items-center gap-2 text-3xl font-bold"
+          >
             <Image
               src="/logo.png"
               alt="Leerio Logo"
               width={36}
               height={36}
               className="size-14"
-            />
+            />{" "}
+            Leerio
           </Link>
 
           {/* Desktop Navigation */}

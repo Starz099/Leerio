@@ -8,8 +8,10 @@ import {
   AudioWaveform,
   Sparkles,
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export default function HowItWorks() {
+  const [activeStep, setActiveStep] = useState(0);
   const steps = [
     {
       number: "01",
@@ -55,10 +57,19 @@ export default function HowItWorks() {
     },
   ];
 
+  // Auto-cycle through steps every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStep((current) => (current + 1) % steps.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [steps.length]);
+
   return (
     <section
       id="how-it-works"
-      className="bg-background relative overflow-hidden py-20 sm:py-24 lg:py-32"
+      className="relative overflow-hidden py-20 sm:py-24 lg:py-32"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -83,7 +94,13 @@ export default function HowItWorks() {
                   <div className="bg-border/40 absolute top-12 left-20 h-8 w-px" />
                 )}
 
-                <div className="hover:border-border/40 hover:bg-muted/30 flex items-start gap-6 rounded-lg border border-transparent px-4 py-3 transition-all duration-200">
+                <div
+                  className={`flex items-start gap-6 rounded-lg border px-4 py-3 transition-all duration-500 ${
+                    activeStep === index
+                      ? "border-border/40 bg-muted/30"
+                      : "hover:border-border/40 hover:bg-muted/30 border-transparent"
+                  }`}
+                >
                   {/* Number */}
                   <div className="shrink-0 pt-0.5">
                     <span className="text-muted-foreground text-lg font-light">

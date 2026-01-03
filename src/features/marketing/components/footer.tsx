@@ -11,7 +11,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="border-border/40 bg-background border-t py-12 sm:py-14 lg:py-16">
+    <footer className="border-border/40 border-t py-12 sm:py-14 lg:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-end justify-between gap-8 sm:flex-row">
           <div className="text-muted-foreground flex items-end gap-2">

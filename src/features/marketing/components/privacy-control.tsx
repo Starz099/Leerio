@@ -1,6 +1,10 @@
+"use client";
+
 import { Shield, FileText, Lock, Eye } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const PrivacyControl = () => {
+  const [activeFeature, setActiveFeature] = useState(0);
   const features = [
     {
       icon: FileText,
@@ -20,8 +24,17 @@ const PrivacyControl = () => {
     },
   ];
 
+  // Auto-cycle through features every 2.5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature((current) => (current + 1) % features.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [features.length]);
+
   return (
-    <section id="privacy" className="bg-background py-16 sm:py-20 lg:py-24">
+    <section id="privacy" className="py-16 sm:py-20 lg:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           {/* Header */}
@@ -46,9 +59,13 @@ const PrivacyControl = () => {
               return (
                 <div
                   key={index}
-                  className="border-border bg-card hover:border-border/80 flex items-center gap-4 rounded-lg border p-6 transition-colors"
+                  className={`flex items-center gap-4 rounded-lg border p-6 transition-all duration-500 ${
+                    activeFeature === index
+                      ? "border-border/80 bg-muted/40 scale-105"
+                      : "border-border bg-card hover:border-border/80"
+                  }`}
                 >
-                  <div className="bg-muted flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg">
+                  <div className="bg-muted flex h-12 w-12 shrink-0 items-center justify-center rounded-lg">
                     <Icon className="text-foreground h-6 w-6" />
                   </div>
                   <p className="text-foreground text-base font-medium">

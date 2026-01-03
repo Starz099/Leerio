@@ -1,6 +1,7 @@
 "use client";
 
 import { GraduationCap, Code2, FlaskConical, BookMarked } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const useCases = [
   {
@@ -30,8 +31,18 @@ const useCases = [
 ];
 
 export default function UseCases() {
+  const [activeCase, setActiveCase] = useState(0);
+
+  // Auto-cycle through use cases every 2.5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveCase((current) => (current + 1) % useCases.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
   return (
-    <section id="use-cases" className="bg-background py-16 sm:py-20 lg:py-24">
+    <section id="use-cases" className="py-16 sm:py-20 lg:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center sm:mb-14">
           <p className="text-muted-foreground mb-3 text-sm font-semibold tracking-[0.2em] uppercase">
@@ -43,12 +54,16 @@ export default function UseCases() {
         </div>
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {useCases.map((item) => {
+          {useCases.map((item, index) => {
             const Icon = item.icon;
             return (
               <div
                 key={item.title}
-                className="border-border/40 bg-muted/20 hover:border-border/70 hover:bg-muted/30 rounded-2xl border p-8 text-center shadow-sm transition-colors duration-200"
+                className={`rounded-2xl border p-8 text-center shadow-sm transition-all duration-500 ${
+                  activeCase === index
+                    ? "border-border/70 bg-muted/30 scale-105"
+                    : "border-border/40 bg-muted/20 hover:border-border/70 hover:bg-muted/30"
+                }`}
               >
                 <div className="mb-6 flex justify-center">
                   <div className="bg-muted/40 flex h-14 w-14 items-center justify-center rounded-full">

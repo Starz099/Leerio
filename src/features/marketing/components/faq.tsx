@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
 const FAQ = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   const faqs = [
     {
@@ -41,10 +42,25 @@ const FAQ = () => {
 
   const toggleQuestion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
+    setIsPaused(true); // Pause auto-cycling when user interacts
   };
 
+  // Auto-cycle through FAQs every 3 seconds
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      setOpenIndex((current) => {
+        if (current === null) return 0;
+        return (current + 1) % faqs.length;
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isPaused, faqs.length]);
+
   return (
-    <section id="faq" className="bg-background py-16 sm:py-20 lg:py-24">
+    <section id="faq" className="py-16 sm:py-20 lg:py-24">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           {/* Header */}
@@ -78,7 +94,7 @@ const FAQ = () => {
                   />
                 </button>
                 {openIndex === index && (
-                  <div className="border-border bg-muted/30 border-t px-6 pt-4 pb-6">
+                  <div className="border-border bg-muted/30 animate-in fade-in slide-in-from-top-2 border-t px-6 pt-4 pb-6 duration-300">
                     <p className="text-muted-foreground text-sm leading-relaxed sm:text-base">
                       {faq.answer}
                     </p>

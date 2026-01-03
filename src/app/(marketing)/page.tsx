@@ -21,6 +21,7 @@ const Home = async () => {
 
   return (
     <Container>
+      <div className="from-background to-primary/10 fixed inset-0 -z-10 bg-linear-to-b" />
       <Navbar />
       <Hero />
       <Mockup />

@@ -8,10 +8,10 @@ import { SignInButton } from "@clerk/nextjs";
 
 export default function Hero() {
   return (
-    <section className="from-background via-background to-muted/20 relative flex min-h-[calc(100vh-64px)] items-center justify-center overflow-hidden bg-linear-to-b">
+    <section className="relative flex min-h-[calc(100vh-130px)] items-center justify-center overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-20 text-center sm:px-6 lg:px-8">
         {/* Badge */}
-        <div className="mb-8 flex justify-center">
+        <div className="mb-6 flex justify-center">
           <Badge
             variant="outline"
             className="gap-2 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
