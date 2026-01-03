@@ -1,0 +1,310 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  Bot,
+  Loader2,
+  Mic,
+  MicOff,
+  Send,
+  Sparkles,
+  Square,
+  User,
+} from "lucide-react";
+import { usePathname } from "next/navigation";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import apiClient from "@/lib/http";
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  message: string;
+}
+
+const ChatSection = () => {
+  const pathname = usePathname();
+
+  const pathParts = pathname.split("/");
+  const username = pathParts[1];
+  const projectId = pathParts[3];
+
+  const [chat, setChat] = useState<ChatMessage[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (!username || !projectId) return;
+      setIsHistoryLoading(true);
+      try {
+        const { data } = await apiClient.get<{
+          messages?: ChatMessage[];
+        }>("/chat/history", { params: { username, projectId } });
+        setChat(data.messages ?? []);
+      } catch (error) {
+        console.error("Error loading chat history:", error);
+      } finally {
+        setIsHistoryLoading(false);
+      }
+    };
+
+    loadHistory();
+  }, [projectId, username]);
+
+  useEffect(() => {
+    if (listening) {
+      setInputValue(transcript);
+    }
+  }, [listening, transcript]);
+
+  const startListening = () => {
+    if (!browserSupportsSpeechRecognition) return;
+    resetTranscript();
+    setInputValue("");
+    SpeechRecognition.startListening({ continuous: true, language: "en-US" });
+  };
+
+  const stopListening = () => {
+    SpeechRecognition.stopListening();
+    setInputValue((current) => current || transcript);
+  };
+
+  const toggleListening = () => {
+    if (listening) {
+      stopListening();
+      return;
+    }
+    startListening();
+  };
+
+  const handleSend = async () => {
+    if (listening) {
+      stopListening();
+    }
+
+    const messageToSend = inputValue.trim();
+
+    if (!messageToSend || isLoading) return;
+
+    const chatContext = chat;
+    const newQuery: ChatMessage = {
+      role: "user",
+      message: messageToSend,
+    };
+
+    setChat([...chat, newQuery]);
+    setInputValue("");
+    setIsLoading(true);
+
+    try {
+      const query: { chatHistory: ChatMessage[]; query: string } = {
+        chatHistory: chatContext,
+        query: newQuery.message,
+      };
+
+      const { data: response } = await apiClient.post<{
+        response: string;
+        history?: ChatMessage[];
+      }>("/chat", undefined, {
+        params: {
+          username,
+          projectId,
+          query: JSON.stringify(query),
+          api_key: localStorage.getItem("groq_api_key") ?? undefined,
+        },
+      });
+
+      const aiResponse: ChatMessage = {
+        role: "assistant",
+        message: response.response,
+      };
+
+      setChat(response.history ?? [...chatContext, newQuery, aiResponse]);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    if (!username || !projectId) return;
+    setIsClearing(true);
+    try {
+      await apiClient.post("/chat/clear", undefined, {
+        params: { username, projectId },
+      });
+      setChat([]);
+    } catch (error) {
+      console.error("Error clearing chat history:", error);
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
+  return (
+    <div className="bg-background relative flex h-full w-full flex-col overflow-hidden rounded-md border">
+      <div
+        className="h-[70vh] space-y-4 overflow-y-auto p-4 pb-28 [&::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: "none" }}
+      >
+        {chat.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center space-y-4 text-center">
+            <div className="p-4">
+              <Sparkles className="text-primary h-12 w-12" />
+            </div>
+            <div>
+              <h3 className="mb-2 text-xl font-semibold">
+                Start a Conversation
+              </h3>
+              <p className="text-muted-foreground max-w-md">
+                Ask me anything about your document. I can help you understand,
+                analyze, and extract information.
+              </p>
+            </div>
+          </div>
+        ) : (
+          chat.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            >
+              {msg.role === "assistant" && (
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+                  <Bot className="text-primary h-5 w-5" />
+                </div>
+              )}
+              <Card
+                className={`max-w-[80%] p-4 ${
+                  msg.role === "user"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted"
+                }`}
+              >
+                <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+              </Card>
+              {msg.role === "user" && (
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+                  <User className="text-primary h-5 w-5" />
+                </div>
+              )}
+            </div>
+          ))
+        )}
+        {isLoading && (
+          <div className="flex justify-start gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+              <Bot className="text-primary h-5 w-5" />
+            </div>
+            <Card className="bg-muted max-w-[80%] p-4">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-muted-foreground text-sm">
+                  Thinking...
+                </span>
+              </div>
+            </Card>
+          </div>
+        )}
+        {isHistoryLoading && !isLoading && (
+          <div className="flex justify-start gap-3">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+              <Bot className="text-primary h-5 w-5" />
+            </div>
+            <Card className="bg-muted max-w-[80%] p-4">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="text-muted-foreground text-sm">
+                  Loading history...
+                </span>
+              </div>
+            </Card>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-background absolute right-0 bottom-0 left-0 border-t p-2">
+        <div className="flex flex-wrap gap-2">
+          <Input
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            placeholder="Ask a question about your document..."
+            className="flex-1"
+            disabled={isLoading}
+          />
+          <Button
+            type="button"
+            variant={listening ? "secondary" : "outline"}
+            onClick={toggleListening}
+            disabled={isLoading || !browserSupportsSpeechRecognition}
+            className="gap-2"
+          >
+            {browserSupportsSpeechRecognition ? (
+              listening ? (
+                <Square className="h-4 w-4" />
+              ) : (
+                <Mic className="h-4 w-4" />
+              )
+            ) : (
+              <MicOff className="h-4 w-4" />
+            )}
+            {listening ? "Stop" : "Voice"}
+          </Button>
+          <Button
+            onClick={handleSend}
+            disabled={!inputValue.trim() || isLoading}
+            className="gap-2"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+            Send
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClearHistory}
+            disabled={isClearing || isLoading}
+          >
+            {isClearing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Clear Chat"
+            )}
+          </Button>
+        </div>
+        {!browserSupportsSpeechRecognition && (
+          <p className="text-muted-foreground mt-2 text-xs">
+            Voice input is not supported in this browser.
+          </p>
+        )}
+        {listening && browserSupportsSpeechRecognition && (
+          <p className="text-primary mt-2 text-xs">Listening...</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ChatSection;
