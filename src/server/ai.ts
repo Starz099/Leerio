@@ -76,13 +76,15 @@ export async function chatWithLLMwithContext(
     ...(api_key ? { apiKey: api_key } : {}),
   });
 
-  const systemPrompt = `You are a helpful assistant that answers user questions based on provided context chunks from documents.
+  const systemPrompt = `You are a helpful assistant that answers user questions based on provided context chunks from the pdf uploaded by the user.
+  Also if the user asks for the summary, just tell them to check out the summary section.
 Your task is to use the context chunks to provide accurate and relevant answers to the user's questions.
 
 Guidelines:
 1. Use only the information provided in the context chunks to answer the question
 2. If the context does not contain enough information, respond with "I don't know"
 3. Make your answers clear, concise, and relevant to the question
+4. Also never mention any source or chunk ids in your answer.
 
 Context Chunks:
 ${contextChunks.matches
