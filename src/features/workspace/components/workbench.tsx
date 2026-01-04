@@ -10,7 +10,14 @@ const Workbench = () => {
     "chat" | "read-aloud" | "summarise"
   >("chat");
 
+  const stopSpeechIfNeeded = () => {
+    if (typeof window === "undefined") return;
+    window.speechSynthesis.cancel();
+  };
+
   const handleModeChange = (mode: "chat" | "read-aloud" | "summarise") => {
+    // Always stop any active speech when switching modes
+    stopSpeechIfNeeded();
     setSelectedMode(mode);
   };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCircle, FileText, Loader2, Sparkles } from "lucide-react";
+import { CheckCircle, Copy, FileText, Loader2, Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,14 @@ const SummarySection = () => {
       console.error("Error:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCopySummary = async () => {
+    try {
+      await navigator.clipboard.writeText(summary);
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
     }
   };
 
@@ -95,11 +103,11 @@ const SummarySection = () => {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={() => setSummary("")}
+              onClick={handleCopySummary}
               className="gap-2"
             >
-              <Sparkles className="h-4 w-4" />
-              Generate New Summary
+              <Copy className="h-4 w-4" />
+              Copy Summary
             </Button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CheckCircle,
   Loader2,
@@ -13,12 +13,23 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import apiClient from "@/lib/http";
 
 const ReadAloudSection = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [selectedVoice, setSelectedVoice] = useState<string>("");
+  const [availableVoices, setAvailableVoices] = useState<
+    SpeechSynthesisVoice[]
+  >([]);
   const queueRef = useRef<string[]>([]);
   const indexRef = useRef<number>(0);
   const pathname = usePathname();
@@ -26,6 +37,33 @@ const ReadAloudSection = () => {
   const pathParts = pathname.split("/");
   const username = pathParts[1];
   const projectId = pathParts[3];
+
+  // Load voices and cleanup on unmount
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      setAvailableVoices(voices);
+      // Set default to first English voice or first voice
+      const defaultVoice =
+        voices.find((v) => /English|en/i.test(v.lang)) || voices[0];
+      if (defaultVoice) {
+        setSelectedVoice(defaultVoice.voiceURI);
+      }
+    };
+
+    if (window.speechSynthesis.getVoices().length) {
+      loadVoices();
+    } else {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+      window.speechSynthesis.cancel();
+      queueRef.current = [];
+      indexRef.current = 0;
+    };
+  }, []);
 
   const sanitizeText = (text: string) => {
     const cleaned = text
@@ -153,20 +191,9 @@ const ReadAloudSection = () => {
       setIsLoading(false);
       setIsSpeaking(true);
 
-      // Load voices reliably
-      const selectVoice = () => {
-        const voices = window.speechSynthesis.getVoices();
-        console.log("Available voices:", voices.length);
-        const voice =
-          voices.find((v) => /English|en/i.test(v.lang)) || voices[0];
-        console.log("Selected voice:", voice?.name);
-        speakChunk(voice);
-      };
-      if (window.speechSynthesis.getVoices().length) {
-        selectVoice();
-      } else {
-        window.speechSynthesis.onvoiceschanged = selectVoice;
-      }
+      // Get the selected voice
+      const voice = availableVoices.find((v) => v.voiceURI === selectedVoice);
+      speakChunk(voice);
     } catch (error) {
       console.error("Error in speak function:", error);
       setIsSpeaking(false);
@@ -192,20 +219,43 @@ const ReadAloudSection = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           {!isSpeaking && !isLoading && (
-            <ul className="text-muted-foreground space-y-2 text-sm">
-              <li className="flex items-start gap-2">
-                <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
-                <span>Natural text-to-speech synthesis</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
-                <span>Adjustable playback controls</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
-                <span>High-quality voice output</span>
-              </li>
-            </ul>
+            <>
+              <ul className="text-muted-foreground space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                  <span>Natural text-to-speech synthesis</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                  <span>Adjustable playback controls</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="text-primary mt-0.5 h-4 w-4 shrink-0" />
+                  <span>High-quality voice output</span>
+                </li>
+              </ul>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Select Voice</label>
+                <Select
+                  value={selectedVoice}
+                  onValueChange={(value) => {
+                    if (value) setSelectedVoice(value);
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableVoices.map((voice) => (
+                      <SelectItem key={voice.voiceURI} value={voice.voiceURI}>
+                        {voice.name} ({voice.lang})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
           )}
 
           {isLoading && (
