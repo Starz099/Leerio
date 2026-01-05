@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# Leerio
 
-First, run the development server:
+AI workspace for talking to your PDFs: upload once, then chat, summarize, and listen to the document with voice controls.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+[Live demo](https://leerio.vercel.app)
+
+</div>
+
+## Features
+
+- Upload PDFs to Cloudinary, auto-chunk with LangChain, embed via Google Gemini, and index in Pinecone for fast retrieval.
+- Ask questions with context-aware Groq responses; chat history persists per document.
+- One-click document summarization with rate-limited batching to avoid provider throttling.
+- Read-aloud mode using browser Speech Synthesis with voice selection and progress tracking.
+- Clerk-authenticated dashboard with recent uploads, search, and per-document workspace that pairs preview + tools.
+
+## How It Works
+
+1. **Upload**: Users upload a PDF; it is stored on Cloudinary and registered as a project in MongoDB.
+2. **Chunk + Embed**: Text is extracted with pdf2json, chunked (1000 chars, 200 overlap), and embedded (Gemini `text-embedding-004`) before being saved to Pinecone with project metadata.
+3. **Chat**: Queries are rephrased for clarity, embedded, matched against Pinecone, and answered by Groq Llama 3.1 using only retrieved context; chat history is persisted in MongoDB.
+4. **Summarize**: Chunks are processed in small groups with delays to respect rate limits, summarized via Groq, then merged into a final summary.
+5. **Read Aloud**: The original PDF text is fetched, sanitized, split into short sentences, and streamed through browser Speech Synthesis with selectable voices.
+
+## Stack
+
+- Next.js 16 (App Router) with React 19, TypeScript, Tailwind.
+- Clerk for authentication.
+- LangChain (Groq, Google Generative AI embeddings, Pinecone vector store).
+- MongoDB via Mongoose for projects, chunks, and chat history.
+- Cloudinary for raw PDF storage; pdf2json for extraction.
+
+## Project Layout
+
+```
+src/
+	app/
+		(marketing)/page.tsx        # Landing page with CTA, FAQ, hero
+		(app)/[username]/           # Authenticated area (dashboard, projects, settings)
+		api/                        # Upload, chat, summary, read-aloud, projects endpoints
+	features/
+		dashboard/                  # Upload and listings
+		workspace/                  # Chat, summary, read-aloud, preview panels
+	server/                       # DB models, embeddings, Pinecone, Groq orchestration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Running
 
-## Learn More
+```bash
+# Dev server
+bun run dev
 
-To learn more about Next.js, take a look at the following resources:
+# Production build
+bun run build
+bun run start
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Lint and format
+bun run lint
+bun run format
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+By default the app runs at http://localhost:3000.
 
-## Deploy on Vercel
+## API Endpoints (App Router)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- POST `/api/upload` — upload and index a PDF for a user.
+- GET `/api/projects?username=` — list projects for the user.
+- POST `/api/chat?username=&projectId=&query=` — ask a question with chat history.
+- GET `/api/chat/history?username=&projectId=` — fetch chat history.
+- POST `/api/chat/clear?username=&projectId=` — clear chat history.
+- POST `/api/summary?username=&projectId=` — generate and cache summaries.
+- POST `/api/read-aloud?username=&projectId=` — return raw PDF text for TTS.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Using the App
+
+1. Sign in with Clerk; the landing page redirects signed-in users to their dashboard.
+2. Upload a PDF from the dashboard. After processing, it appears in Recent Documents and Projects.
+3. Open a document workspace to see the PDF preview alongside Chat, Summarize, and Read Aloud tabs.
+4. (Optional) Add a Groq API key in Settings to keep requests client-owned.
+5. Clear chat history per document when you need a fresh context.
+
+## Notes
+
+- Pinecone metadata includes `projectId` so queries stay scoped to the active document.
+- Summarization batches requests with delays to avoid rate limits while persisting intermediate summaries.
