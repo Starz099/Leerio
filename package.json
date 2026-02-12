@@ -13,6 +13,7 @@
     "@aptabase/react": "^0.4.0",
     "@base-ui/react": "^1.0.0",
     "@clerk/nextjs": "^6.36.2",
+    "@google/genai": "^1.0.0",
     "@langchain/core": "^1.1.4",
     "@langchain/google-genai": "^2.0.4",
     "@langchain/groq": "^1.0.2",

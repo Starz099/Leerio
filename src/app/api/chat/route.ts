@@ -62,6 +62,12 @@ export async function POST(req: NextRequest) {
       rephrasedQuery as string,
     );
 
+    if (!queryVector || queryVector.length === 0) {
+      throw new Error(
+        "Embedding generation failed. Verify GOOGLE_API_KEY and model access.",
+      );
+    }
+
     const searchResults = await getPineconeIndex().query({
       topK: 10,
       vector: queryVector,

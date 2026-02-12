@@ -136,6 +136,21 @@ export async function POST(req: NextRequest) {
     });
 
     const chunkMetadata = chunks.map((chunk) => ({ projectId, text: chunk }));
+    const embeddings = await getGoogleEmbeddings().embedDocuments(chunks);
+    const hasEmptyEmbedding = embeddings.some(
+      (embedding) => !embedding || embedding.length === 0,
+    );
+
+    if (hasEmptyEmbedding) {
+      const sizes = embeddings.map((embedding) => embedding?.length ?? 0);
+      console.error("Embedding generation returned empty vectors", {
+        chunkCount: chunks.length,
+        vectorSizes: sizes.slice(0, 10),
+      });
+      throw new Error(
+        "Embedding generation failed. Verify GOOGLE_API_KEY and model access.",
+      );
+    }
 
     await PineconeStore.fromTexts(
       chunks,
