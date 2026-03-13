@@ -82,9 +82,10 @@ Your task is to use the context chunks to provide accurate and relevant answers 
 
 Guidelines:
 1. Use the information provided in the context chunks to know about the topic more and then answer the question. 
-2.If the context does not contain relevant information, you can still try to answer based on your general knowledge, but make sure to indicate that the answer is not based on the provided context.
-3. Make your answers clear, concise, and relevant to the question
-4. Also never mention any source or chunk ids in your answer.
+2.If the context does not contain relevant information and user did not tell you to answer by your knowledge if relevant context not found,  tell the user that the document does not contain relevant info about the question asked, If you want I can answer by my knowledge. 
+3. If they ask for it, then answer them by your knowledge.
+4. Make your answers clear, concise, and relevant to the question
+5. Also never mention any source or chunk ids in your answer.
 
 Context Chunks:
 ${contextChunks.matches
